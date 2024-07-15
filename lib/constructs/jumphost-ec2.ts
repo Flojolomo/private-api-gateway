@@ -56,10 +56,6 @@ export class JumphostEc2Construct extends Construct {
       }
     );
 
-    new CfnOutput(this, "ClientInstanceId", {
-      value: clientInstance.instanceId,
-    });
-
     new CfnOutput(this, "PrivateInstanceId", {
       value: privateInstance.instanceId,
     });
