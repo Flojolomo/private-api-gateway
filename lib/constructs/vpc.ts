@@ -54,16 +54,20 @@ export class VpcConstruct extends Construct {
       privateDnsEnabled: true,
     });
 
+    this.vpc.addInterfaceEndpoint("logs-messages-endpoint", {
+      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      securityGroups: [this.securityGroup],
+      privateDnsEnabled: true,
+    });
+
+    this.vpc.addGatewayEndpoint("s3-endpoint", {
+      service: ec2.GatewayVpcEndpointAwsService.S3,
+    });
+
     this.securityGroup.addIngressRule(
       ec2.Peer.ipv4(this.vpc.vpcCidrBlock),
       ec2.Port.HTTPS,
       "Allow HTTPS access for SSM"
-    );
-
-    this.securityGroup.addEgressRule(
-      ec2.Peer.ipv4(this.vpc.vpcCidrBlock),
-      ec2.Port.HTTPS,
-      "Allow ICMP access for SSM"
     );
   }
 }
