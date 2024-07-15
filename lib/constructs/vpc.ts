@@ -9,27 +9,31 @@ export class VpcConstruct extends Construct {
     ],
   });
 
+  public readonly securityGroup = new ec2.SecurityGroup(
+    this,
+    "ClientSecurityGroup",
+    {
+      vpc: this.vpc,
+      securityGroupName: "clientSecurityGroup",
+    }
+  );
+
   public constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const securityGroup = new ec2.SecurityGroup(this, "ClientSecurityGroup", {
-      vpc: this.vpc,
-      securityGroupName: "clientSecurityGroup",
-    });
-
     this.vpc.addInterfaceEndpoint("BackendSsmEndpoint", {
       service: ec2.InterfaceVpcEndpointAwsService.SSM,
-      securityGroups: [securityGroup],
+      securityGroups: [this.securityGroup],
     });
 
     this.vpc.addInterfaceEndpoint("BackendSsmMessagesEndpoint", {
       service: ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
-      securityGroups: [securityGroup],
+      securityGroups: [this.securityGroup],
     });
 
     this.vpc.addInterfaceEndpoint("Ec2MessagesEndpoint", {
       service: ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
-      securityGroups: [securityGroup],
+      securityGroups: [this.securityGroup],
     });
   }
 }
