@@ -19,6 +19,10 @@ This project investigates what is required to spin up and communicate with a pri
 }
 ```
 
+## Deployment
+
+This application is implemented using CDK. To deploy the application run `yarn cdk deploy`
+
 ## Learnings
 
 ### Session Manager
