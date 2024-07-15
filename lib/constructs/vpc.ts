@@ -3,37 +3,61 @@ import { Construct } from "constructs";
 
 export class VpcConstruct extends Construct {
   public readonly vpc = new ec2.Vpc(this, "vpc", {
-    availabilityZones: ["eu-west-1a"],
+    maxAzs: 1,
+    cidr: "10.0.0.0/16",
     subnetConfiguration: [
-      { name: "private-isolated", subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      {
+        name: "public",
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      {
+        name: "private",
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      },
+      {
+        name: "private-isolated",
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+      },
     ],
+    flowLogs: {
+      all: {},
+    },
   });
 
   public readonly securityGroup = new ec2.SecurityGroup(
     this,
-    "ClientSecurityGroup",
+    "ssm-security-group",
     {
       vpc: this.vpc,
-      securityGroupName: "clientSecurityGroup",
+      securityGroupName: "SsmSecurityGroup",
     }
   );
 
   public constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.vpc.addInterfaceEndpoint("BackendSsmEndpoint", {
+    this.vpc.addInterfaceEndpoint("ssm-endpoint", {
       service: ec2.InterfaceVpcEndpointAwsService.SSM,
       securityGroups: [this.securityGroup],
+      privateDnsEnabled: true,
     });
 
-    this.vpc.addInterfaceEndpoint("BackendSsmMessagesEndpoint", {
+    this.vpc.addInterfaceEndpoint("ssm-messages-endpoint", {
       service: ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
       securityGroups: [this.securityGroup],
+      privateDnsEnabled: true,
     });
 
-    this.vpc.addInterfaceEndpoint("Ec2MessagesEndpoint", {
+    this.vpc.addInterfaceEndpoint("ec2-messages-endpoint", {
       service: ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
       securityGroups: [this.securityGroup],
+      privateDnsEnabled: true,
     });
+
+    this.securityGroup.addIngressRule(
+      ec2.Peer.ipv4(this.vpc.vpcCidrBlock),
+      ec2.Port.HTTPS,
+      "Allow HTTPS access for SSM"
+    );
   }
 }
