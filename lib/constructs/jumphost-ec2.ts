@@ -5,6 +5,7 @@ import * as iam from "aws-cdk-lib/aws-iam";
 import { CfnOutput } from "aws-cdk-lib";
 
 type JumphostEc2ConstructProps = {
+  ec2SecurityGroup: ec2.ISecurityGroup;
   vpc: ec2.IVpc;
 };
 
@@ -24,20 +25,6 @@ export class JumphostEc2Construct extends Construct {
       iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore")
     );
 
-    const clientInstance = new ec2.Instance(this, "TestingEC2Instance2", {
-      instanceName: "client",
-      vpc: props.vpc,
-      instanceType: ec2.InstanceType.of(
-        ec2.InstanceClass.T2,
-        ec2.InstanceSize.MICRO
-      ),
-      machineImage: new ec2.AmazonLinuxImage(),
-      role: role,
-      vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-      },
-    });
-
     const privateInstance = new ec2.Instance(
       this,
       "PrivateIsolatedEC2Instance",
@@ -50,6 +37,7 @@ export class JumphostEc2Construct extends Construct {
         ),
         machineImage: new ec2.AmazonLinuxImage(),
         role: role,
+        securityGroup: props.ec2SecurityGroup,
         vpcSubnets: {
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },

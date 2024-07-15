@@ -59,5 +59,11 @@ export class VpcConstruct extends Construct {
       ec2.Port.HTTPS,
       "Allow HTTPS access for SSM"
     );
+
+    this.securityGroup.addEgressRule(
+      ec2.Peer.ipv4(this.vpc.vpcCidrBlock),
+      ec2.Port.HTTPS,
+      "Allow ICMP access for SSM"
+    );
   }
 }

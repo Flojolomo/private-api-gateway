@@ -7,8 +7,9 @@ export class PrivateApiGatewayStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const { vpc } = new VpcConstruct(this, "vpc");
+    const { vpc, securityGroup } = new VpcConstruct(this, "vpc");
     new JumphostEc2Construct(this, "jumphost-ec2", {
+      ec2SecurityGroup: securityGroup,
       vpc,
     });
   }
