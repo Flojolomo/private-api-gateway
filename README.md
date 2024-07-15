@@ -5,6 +5,19 @@ This project investigates what is required to spin up and communicate with a pri
 1. Spin up a VPC with private isolated subnet
 2. Launch a EC2 instance in the private isolated subnet
 3. Make sure that SSM session manager can connect to the EC2 instance
+4. Set up API gateway with a mock response
+5. Connect to the EC2 instance in private isolated subnet
+6. Run `curl` with the URL displayed as CDK output
+7. Receive the response
+
+```json
+{
+  "id": "22af58b7-4e0e-417e-875c-413cbca93363",
+  "createdAt": 1720824133164,
+  "updatedAt": 1720824133164,
+  "message": "Hello, from a private API!"
+}
+```
 
 ## Learnings
 
@@ -44,10 +57,18 @@ What I forgot to consider were the SSM preferences configured for my AWS certifi
 }
 ```
 
-TODO how does the document look like for new accounts?
-
 ## References
 
 [Troubleshooting blank screen for systems manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-troubleshooting.html#session-manager-troubleshooting-start-blank-screen)
 
 [Configuration of SSM preferences](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-configure-preferences-cli.html)
+
+https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-api-create.html#apigateway-private-api-set-up-resource-policy
+
+https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+https://dev.to/wojciechmatuszewski/mocking-api-endpoints-with-amazon-api-gateway-mock-integration-1h65
+
+## TODOs
+
+- how does the document look like for new accounts?
+- create construct for SSM session manager connectable instance in private subnets, depending on SSM preferences with a custom resource
